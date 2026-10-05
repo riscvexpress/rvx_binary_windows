@@ -1,0 +1,17 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files
+*.so      binary
+*.so.*    binary
+*.pyd     binary
+*.dll     binary
+*.dylib   binary
+*.exe     binary
+*.bin     binary
+*.zip     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary

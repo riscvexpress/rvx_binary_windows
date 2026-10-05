@@ -1,0 +1,16 @@
+*~
+*.swp
+*.swo
+*.bak
+*.sh
+*.zip
+.vscode
+__pycache__
+
+.rvx_*
+rvx_*.log
+.login_info
+rvx_python_config.mh
+python3.bat
+
+build/
