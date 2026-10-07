@@ -9,8 +9,9 @@ __pycache__
 
 .rvx_*
 rvx_*.log
-.login_info
-rvx_python_config.mh
-python3.bat
+rvx_config_python.mh
+rvx_setup.sh
 
-build/
+# local
+ocd/
+compiler_xpack/

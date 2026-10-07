@@ -1,0 +1,1 @@
+export RVX_COMPILER_XPACK=${RVX_BINARY_HOME}/compiler_xpack/bin/riscv-none-elf-
