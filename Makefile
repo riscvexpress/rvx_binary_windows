@@ -24,7 +24,7 @@ ocd:
 	${PYTHON3_CMD} -c "import glob, tarfile; [tarfile.open(x).extractall('./ocd') for x in glob.glob('./openocd_rvp-*.tar.gz')]"
 
 compiler:
-	${PYTHON3_CMD} ./get_xpack_compiler.py --keeps_archive
+	${PYTHON3_CMD} ./get_xpack_compiler.py -s repack --keeps_archive
 
 clean:
 	${PYTHON3_CMD} -c "import shutil; [shutil.rmtree(x, ignore_errors=True) for x in ('./ocd', './compiler_xpack')]"

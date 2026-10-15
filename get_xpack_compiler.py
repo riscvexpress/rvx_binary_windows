@@ -18,6 +18,7 @@
 import os
 import sys
 import platform
+import tarfile
 import zipfile
 import argparse
 from pathlib import Path
@@ -32,12 +33,26 @@ DEFAULT_VERSION = '15.2.0-1'
 RELEASE_URL_FORMAT = 'https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v{version}/{filename}'
 INFO_FILENAME = 'compiler_xpack_info.txt'
 
+# original: the xPack release, repack: trimmed for RVX by rvx_dev_util/repack_xpack_compiler.py (orca and rocket only)
+SOURCE_LIST = ('original', 'repack')
+DEFAULT_SOURCE = 'original'
+REPACK_CORE = 'or'
+REPACK_URL_FORMAT = 'https://raw.githubusercontent.com/riscvexpress/xpack-riscv-none-elf-gcc-{version}-rvx-{core}/main/{filename}'
+REPACK_PLATFORM_LIST = ('linux-x64', 'win32-x64')
+
 class XpackCompiler():
-  def __init__(self, version:str=DEFAULT_VERSION):
+  def __init__(self, version:str=DEFAULT_VERSION, source:str=DEFAULT_SOURCE):
     assert version
+    assert source in SOURCE_LIST, source
     self.version = version
-    self.filename = f'xpack-riscv-none-elf-gcc-{version}-{XpackCompiler.__get_platform()}{XpackCompiler.__get_extension()}'
-    self.link = RELEASE_URL_FORMAT.format(version=version, filename=self.filename)
+    platform_name = XpackCompiler.__get_platform()
+    if source=='original':
+      self.filename = f'xpack-riscv-none-elf-gcc-{version}-{platform_name}{XpackCompiler.__get_extension()}'
+      self.link = RELEASE_URL_FORMAT.format(version=version, filename=self.filename)
+    else:
+      assert platform_name in REPACK_PLATFORM_LIST, f'no repacked compiler for {platform_name}, use the original one'
+      self.filename = f'xpack-riscv-none-elf-gcc-{version}-{platform_name}-rvx-{REPACK_CORE}.tar.xz'
+      self.link = REPACK_URL_FORMAT.format(version=version, core=REPACK_CORE, filename=self.filename)
 
   # e.g., linux-x64, linux-arm64, darwin-x64, darwin-arm64, win32-x64
   @staticmethod
@@ -75,6 +90,13 @@ class XpackCompiler():
     if target_file.name.endswith('.zip'):
       with zipfile.ZipFile(target_file) as zip_file:
         zip_file.extractall(target_file.parent)
+    elif target_file.name.endswith('.tar.xz'):
+      # python tarfile, since the tar of windows may not support xz
+      with tarfile.open(target_file) as tar_file:
+        if hasattr(tarfile, 'tar_filter'):
+          tar_file.extractall(target_file.parent, filter='tar')
+        else:
+          tar_file.extractall(target_file.parent)
     else:
       extract_file(target_file)
 
@@ -120,10 +142,11 @@ if __name__ =='__main__':
   parser = argparse.ArgumentParser(description='Get xPack RISC-V GCC Toolchain')
   parser.add_argument('-output', '-o', default='./compiler_xpack', help='output directory')
   parser.add_argument('-version', '-v', default=DEFAULT_VERSION, help='xpack release version')
+  parser.add_argument('-source', '-s', default=DEFAULT_SOURCE, choices=SOURCE_LIST, help='original: xPack release, repack: trimmed for RVX (orca and rocket only)')
   parser.add_argument('--keeps_top_dir', action='store_true', help='keep the top directory of the archive')
   parser.add_argument('--keeps_archive', action='store_true', help='keep the downloaded archive file')
 
   args = parser.parse_args()
   output_dir = Path(args.output).absolute().resolve()
-  compiler = XpackCompiler(args.version)
+  compiler = XpackCompiler(args.version, args.source)
   compiler.download(output_dir, not args.keeps_top_dir, args.keeps_archive)
