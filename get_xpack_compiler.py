@@ -37,7 +37,7 @@ INFO_FILENAME = 'compiler_xpack_info.txt'
 SOURCE_LIST = ('original', 'repack')
 DEFAULT_SOURCE = 'original'
 REPACK_CORE = 'or'
-REPACK_URL_FORMAT = 'https://raw.githubusercontent.com/riscvexpress/xpack-riscv-none-elf-gcc-{version}-rvx-{core}/main/{filename}'
+REPACK_URL_FORMAT = 'https://github.com/riscvexpress/xpack-riscv-none-elf-gcc-{version}-rvx-{core}/releases/download/v{version}/{filename}'
 REPACK_PLATFORM_LIST = ('linux-x64', 'win32-x64')
 
 class XpackCompiler():
