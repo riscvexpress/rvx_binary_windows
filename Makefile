@@ -21,7 +21,7 @@ include ../rvx_config_python.mh
 all: ocd compiler
 
 ocd:
-	${PYTHON3_CMD} -c "import glob, tarfile; [tarfile.open(x).extractall('./ocd') for x in glob.glob('./openocd_rvp-*.tar.gz')]"
+	${PYTHON3_CMD} -c "import glob, shutil, tarfile; [tarfile.open(x).extractall('./ocd') for x in glob.glob('./openocd_rvp-*.tar.gz')]; [shutil.copy(x, './ocd') for x in glob.glob('./*.dll')]"
 
 compiler:
 	${PYTHON3_CMD} ./get_xpack_compiler.py -s repack --keeps_archive
